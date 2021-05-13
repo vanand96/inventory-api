@@ -1,0 +1,84 @@
+enum ProductType {
+  Shirts
+  Jeans
+  Jackets
+  Sweaters
+  Accessories
+}
+
+type Product {
+  _id: ID!
+  id: Int!
+  category: ProductType!
+  name: String!
+  price: Float
+  image: String
+}
+
+type ProductCounts {
+  name: String!
+  Shirts: Int
+  Jeans: Int
+  Jackets: Int
+  Sweaters: Int
+  Accessories: Int
+}
+
+type ProductListWithPages {
+  products: [Product!]!
+  pages: Int
+}
+
+type User {
+  signedIn: Boolean!
+  givenName: String
+  name: String
+  email: String
+}
+
+"Toned down Issue, used as inputs, without server generated values."
+input ProductInputs {
+  name: String!
+  "Optional, if not supplied, will be set to 'Shirts'"
+  category: ProductType = Shirts
+  price: Float
+  image: String
+}
+
+"""
+Inputs for productUpdate: all are optional. Whichever is specified will
+be set to the given value, undefined fields will remain unmodified.
+"""
+input ProductUpdateInputs {
+  name: String
+  category: ProductType
+  price: Float
+  image: String
+}
+
+##### Top level declarations
+type Query {
+  about: String!
+  user: User!
+  productList(
+    category: ProductType
+    priceMin: Float
+    priceMax: Float
+    search: String
+    page: Int = 1
+  ): ProductListWithPages
+  product(id: Int!): Product!
+  productCounts(
+    category: ProductType
+    priceMin: Float
+    priceMax: Float
+  ): [ProductCounts!]!
+}
+
+type Mutation {
+  setAboutMessage(message: String!): String
+  productAdd(product: ProductInputs!): Product!
+  productUpdate(id: Int!, changes: ProductUpdateInputs!): Product!
+  productRestore(id: Int!): Boolean!
+  productDelete(id: Int!): Boolean!
+}
